@@ -1,4 +1,5 @@
 from PySide6.QtWidgets import QWidget, QGridLayout, QPushButton, QSizePolicy, QVBoxLayout
+from styles import CALCULATOR_STYLE
 from .Display import Display
 
 class UserAction(QWidget):
@@ -6,6 +7,7 @@ class UserAction(QWidget):
         super().__init__()
 
         #Attributes
+        self.setStyleSheet(CALCULATOR_STYLE)
         self.inputs = []
 
         vLayout = QVBoxLayout()
@@ -13,6 +15,7 @@ class UserAction(QWidget):
 
         # Display Class
         self.display = Display()
+        self.display.setStyleSheet(CALCULATOR_STYLE)
         vLayout.addWidget(self.display)
 
         #Layouts
@@ -34,6 +37,13 @@ class UserAction(QWidget):
             pushButton.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
             pushButton.pressed.connect(lambda t=text: self.userInput(t))
 
+            pushButton.setProperty("style", "calculator_btn")
+
+            if text == 'del':
+                pushButton.setObjectName("delete")
+            elif text == 'c':
+                pushButton.setObjectName("clear")
+
             if span:
                 gridLayout.addWidget(pushButton, row, col, *span)
             else:
@@ -41,7 +51,12 @@ class UserAction(QWidget):
 
     def userInput(self, text):
         if text not in ['c', '=', 'del']:
-            self.inputs.append(text)
+
+            if text == 'x²':
+                self.inputs.append('**')
+            else:
+                self.inputs.append(text)
+
             display = ''.join(self.inputs)
             self.display.displayInput(display)
 
@@ -66,4 +81,3 @@ class UserAction(QWidget):
             except Exception as e:
                 print(f"Error evaluating expression: {e}")
                 self.display.displayInput("Error")
-
